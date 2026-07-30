@@ -1,5 +1,5 @@
 # BSITA EDITOR
-Generates thumbnail and video w/intro for BSITA YT channel by getting information from the ScoreSaber API
+Generates thumbnail and video w/intro for BSITA YT channel by getting information from the ScoreSaber and BeatLeader API
 
 ## Installation
 1. Install Python
@@ -60,8 +60,9 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
      ```
   - You should be automatically redirected to the WebUI, otherwise, open http://localhost:8000/index.html
 2. Fill out the web form with the required information, then click Start Program
-  - **ScoreSaber/BeatLeader:** the ID after ../u/ on ScoreSaber. Paste the ID, not the whole link. **ScoreSaber only for now**, works with numerical IDs and vanity URLs
-  - **Leaderboard ID:** the ID after ../difficulty/ on ScoreSaber. Paste the ID, not the whole link. **ScoreSaber only for now**, if ../difficulty/ID isn't visible, try changing difficulty on ScoreSaber then switching back
+  - **ScoreSaber/BeatLeader:** select the leaderboard
+  - **Profile ID:** the ID after ../u/ on ScoreSaber or BeatLeader. Paste the ID, not the whole link. Works with numerical IDs and vanity URLs
+  - **Leaderboard ID:** the ID after ../difficulty/ on ScoreSaber or the ID after ../global/ on BeatLeader. Paste the ID, not the whole link. If ../difficulty/ID isn't visible, try changing difficulty on ScoreSaber then switching back. On BeatLeader don't copy the number after the leaderboard ID
   - **Score & Notes:** accuracy in percentage and some extra information (pp, CS level, important feat...)
   - **Google Drive link:** Google Drive link to the video. Must be shared as "Anyone with the link" and should point to the video file directly, not a folder
 3. Google Drive download progress will be visible from the terminal you used to run ```main.py```
