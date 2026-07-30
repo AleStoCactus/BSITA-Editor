@@ -10,12 +10,11 @@ import os
 import video_editor
 
 eel.init('Gui')
-eel.start("index.html")
 
 @eel.expose
 def Generate(leaderboard_id, profile, score, gdriveLink):
-    global player
-    playerRequest = requests.get(f"scoresaber.com/api/v2/players/{profile}").json()
+    global player_name
+    playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
     player_name = playerRequest["playerNameInGame"]
     global bsr
     global map_id
@@ -27,12 +26,13 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
         eel.print_output("Error: Failed to retrieve leaderboard information")
     leaderboard_data = response.json()
     bsr = leaderboard_data["map"]["bsid"]
-    song_name = leaderboard_data["songName"]
-    artist_name = leaderboard_data["songAuthorName"]
+    song_name = leaderboard_data["map"]["songName"]
+    artist_name = leaderboard_data["map"]["songAuthorName"]
     mapper = leaderboard_data["map"]["levelAuthorName"]
     thumbnail_url = leaderboard_data["map"]["coverUrl"]
     rawdiff = leaderboard_data["difficulty"]["difficulty"]
     map_id = leaderboard_data["map"]["id"]
+
     
     eel.DisableStartButton()
     eel.Hide("editor")
@@ -44,9 +44,15 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
         os.remove(f"Gui\\Videos\\{player_name}_{bsr}.mp4")
     if os.path.exists(f"transcripts\\{player_name}_{bsr}_transcript.txt"):
         os.remove(f"transcripts\\{player_name}_{bsr}_transcript.txt")
-    
+
+    eel.print_output(f"Player: {player_name}")
+    eel.print_output(f"Song name: {song_name}")
+    eel.print_output(f"BSR: {bsr}")
+    eel.print_output(f"SS map ID: {map_id}")
+    eel.print_output(f"Song artist: {artist_name}")
+    eel.print_output(f"Mapper: {mapper}")
     eel.print_output("downloading video...")
-    gdown.download(gdriveLink, "video.mp4", quiet=False, fuzzy=True)
+    gdown.download(gdriveLink, "video.mp4", quiet=False)
     eel.print_output("download complete")
 
     
@@ -97,16 +103,45 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
     artist_font = ImageFont.truetype("Metropolis-Thin.otf", artist_font_size)
     draw = ImageDraw.Draw(image)
     wrapped_song_name = textwrap.fill(song_name, 30)
-    wrapped_song_name_width, wrapped_song_name_height = draw.textsize(wrapped_song_name, font=song_font)
-    draw.text((600, 490), wrapped_song_name, font=song_font, fill=(255, 255, 255, 255), stroke_width=text_outline_width, stroke_fill=(255, 255, 255, 255))
-    draw.text((600, 490 + wrapped_song_name_height + 15), artist_name, font=artist_font, fill=(255, 255, 255, 255))
+
+    # Get the bounding box tuple: (left, top, right, bottom)
+    left, top, right, bottom = draw.multiline_textbbox(
+        (0, 0), wrapped_song_name, font=song_font
+    )
+
+    # Calculate width and height
+    wrapped_song_name_width = right - left
+    wrapped_song_name_height = bottom - top
+
+    # Render text
+    draw.text(
+        (600, 490),
+        wrapped_song_name,
+        font=song_font,
+        fill=(255, 255, 255, 255),
+        stroke_width=text_outline_width,
+        stroke_fill=(255, 255, 255, 255),
+    )
+    draw.text(
+        (600, 490 + wrapped_song_name_height + 15),
+        artist_name,
+        font=artist_font,
+        fill=(255, 255, 255, 255),
+    )
 
 
     # Draw player name in the bottom-center of the image
+    # Draw player name in the bottom-center of the image
     player_font = ImageFont.truetype("Metropolis-Thin.otf", 100)
-    text_width, text_height = draw.textsize(player_name, font=player_font)
+    
+    # Get bounding box: (left, top, right, bottom)
+    p_left, p_top, p_right, p_bottom = draw.textbbox((0, 0), player_name, font=player_font)
+    text_width = p_right - p_left
+    text_height = p_bottom - p_top
+
     text_x = (1920 - text_width) / 2
     text_y = 930
+    draw.text((text_x, text_y), player_name, font=player_font, fill=(255, 255, 255, 255))
     draw.text((text_x, text_y), player_name, font=player_font, fill=(255, 255, 255, 255))
 
     if player_name in ["arbo_5418", "bevilix", "fabrix10", "sionpizzi", "ivy"]:
@@ -158,7 +193,7 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
 
 @eel.expose
 def Transcript(line):
-    with open(f"transcripts/{player}_{bsr}_transcript.txt", "a") as file:
+    with open(f"transcripts/{player_name}_{bsr}_transcript.txt", "a") as file:
         file.write(f"{line}\n")
 
 eel.start('index.html', mode='chrome--app')
