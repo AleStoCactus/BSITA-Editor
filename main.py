@@ -1,7 +1,7 @@
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from io import BytesIO
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 import numpy as np
 import textwrap
 import eel
@@ -10,6 +10,7 @@ import os
 import video_editor
 
 eel.init('Gui')
+eel.start("index.html")
 
 @eel.expose
 def Generate(leaderboard_id, profile, score, gdriveLink):

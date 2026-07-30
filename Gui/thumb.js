@@ -1,7 +1,7 @@
 function send(){
     Show("title")
     var gdrive = document.getElementById("gdrive").value
-    var scoresaber_id = document.getElementById("leaderboard_id").value
+    var leaderboard_id = document.getElementById("leaderboard_id").value
     var profile = document.getElementById("profile").value
     var score = document.getElementById("score").value
     eel.Generate(leaderboard_id, profile, score, gdrive)
