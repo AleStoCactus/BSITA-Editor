@@ -8,6 +8,10 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
    python -m venv .venv
    source .venv/bin/activate
    ```
+   * On Windows, you activate the venv with this command
+     ```
+     .venv\bin\activate
+     ```
 3. Upgrade pip to the latest version
    ```
    pip install --upgrade pip
@@ -50,6 +54,10 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
   ```
    source .venv/bin/activate
    ```
+   * On Windows, you activate the venv with this command
+     ```
+     .venv\bin\activate
+     ```
   - You should be automatically redirected to the WebUI, otherwise, open http://localhost:8000/index.html
 2. Fill out the web form with the required information, then click Start Program
   - **ScoreSaber/BeatLeader:** the ID after ../u/ on ScoreSaber. Paste the ID, not the whole link. **ScoreSaber only for now**, works with numerical IDs and vanity URLs
@@ -112,6 +120,10 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
   * Make sure you're using the venv you've setup during the installation
      ```
     source .venv/bin/activate
+     ```
+     * On Windows, you activate the venv with this command
+     ```
+     .venv\bin\activate
      ```
     - If you've never created the venv in the first place, follow the installation guide above
   * Install the dependencies that are reported as missing by using ```pip```
