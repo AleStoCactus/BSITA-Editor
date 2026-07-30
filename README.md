@@ -83,9 +83,9 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
 ## Usage example
 * Using me (Ryleeeee) as an example
 1. Player's ScoreSaber profile is https://scoresaber.com/u/ryleeeee
-   * Copy ```ryleeeee``` and paste it in **ScoreSaber/BeatLeader** [ScoreSaber only]
+   * Copy ```ryleeeee``` and paste it in **Profile ID**
 2. Map leaderboard is https://scoresaber.com/map/66837/difficulty/497707
-   * Copy ```497707``` and paste it in **Leaderboard ID** [ScoreSaber only]
+   * Copy ```497707``` and paste it in **Leaderboard ID**
 3. Acc is 49.83%
    * Paste the acc in **Score & Notes**
      * Use this field for any other extra information, for example FC, FS, #1 ITA, Second Pass ITA, CS Level 100, 727pp SS...
