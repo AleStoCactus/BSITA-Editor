@@ -59,7 +59,53 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
 3. Google Drive download progress will be visible from the terminal you used to run ```main.py```
 4. Some information regarding the data obtained from ScoreSaber will be logged in the WebUI
 5. Wait for FFmpeg to finish encoding the video, progress is shown in the terminal window
-6. Once the encoding finished, you'll be able to preview and download the video from the WebUI. The thumbnail will be saved in ```/Gui/Thumbnails```
+6. Once the encoding finished, you'll be able to preview and download the video from the WebUI, or grab it from ```/Gui/Videos```
+   * The thumbnail will be saved in ```/Gui/Thumbnails```
+   * The generated title and description can be copied from the latest file in ```/transcripts```
+
+## Usage example
+* Using me (Ryleeeee) as an example
+1. Player's ScoreSaber profile is https://scoresaber.com/u/ryleeeee
+   * Copy ```ryleeeee``` and paste it in **ScoreSaber/BeatLeader** [ScoreSaber only]
+2. Map leaderboard is https://scoresaber.com/map/66837/difficulty/497707
+   * Copy ```497707``` and paste it in **Leaderboard ID** [ScoreSaber only]
+3. Acc is 49.83%
+   * Paste the acc in **Score & Notes**
+     * Use this field for any other extra information, for example FC, FS, #1 ITA, Second Pass ITA, CS Level 100, 727pp SS...
+4. Map is Level 29 on Challenge Saber
+   * Add "Level 29 CS" after the acc. The field for this example will look like "49.83% Level 29 CS First Pass ITA"
+5. Video is hosted on Google Drive: https://drive.google.com/file/d/143kDU7AYHvt8WPHr0l334cw1fnKBlxha/view?usp=drive_link
+   * Verify that the link points directly to the video, then paste it in **Google Drive link**
+6. Press **Start Program**
+   * Check the terminal window for download progress from Google Drive
+   * The WebUI will log all the data gathered from the ScoreSaber leaderboard and player
+   ```
+   Player: WDG_Ryleeeee
+   Song name: I Will Fuck You Up Loli (Kawaii Ripper Remix)
+   BSR: 284b0
+   SS map ID: 66837
+   Song artist: Loffciamcore
+   Mapper: honk
+   downloading video...
+   download complete
+   ```
+7. Once encoding is finished, the video can be found at ```/Gui/Videos/WDG_Ryleeeee_284b0.mp4```
+   * The program will log the generated description, which can be also copied from ```/transcripts```
+     ```
+     Description:
+
+     Player: https://scoresaber.com/u/ryleeeee
+     Mappa: https://beatsaver.com/maps/284b0
+     Mapper: honk
+     Leaderboard: https://scoresaber.com/map/66837/difficulty/497707
+
+     Join our Discord: https://discord.gg/m6NPkrhVFy
+
+     Thumbnail design by @.benna_:
+     https://www.instagram.com/draws_by_benna/
+     Intro Animation by @pizzi7341:
+     https://www.youtube.com/channel/UCc6spI8nRIAhM5-GB95GQpQ
+     ```
 
 ## Troubleshooting
 * Dependencies are reported as missing when starting ```main.py```
@@ -88,6 +134,7 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
 * Better GUI
 * Thumbnail preview
 * Optional input field for custom player name
+* Show generated title and description cleanly in the WebUI
 * Better README
 
 **Only tested on EndeavourOS Linux. It should work on all OSes, tell me if I'm wrong because idk**
