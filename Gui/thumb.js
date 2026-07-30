@@ -4,7 +4,8 @@ function send(){
     var leaderboard_id = document.getElementById("leaderboard_id").value
     var profile = document.getElementById("profile").value
     var score = document.getElementById("score").value
-    eel.Generate(leaderboard_id, profile, score, gdrive)
+    var selected_leaderboard = document.querySelector('input[name="leaderboard"]:checked')?.value;
+    eel.Generate(leaderboard_id, profile, score, gdrive, selected_leaderboard)
 }
 
 eel.expose(DisableStartButton)
