@@ -1,9 +1,12 @@
 # Custom project exclusions
 __pycache__/
-/Gui/Videos/
-/transcripts/
+/Gui/Videos/*
+!/Gui/Videos/.gitkeep
+/transcripts/*
+!/transcripts/.gitkeep
 /venv/
-/Gui/Thumbnails
+/Gui/Thumbnails/*
+!/Gui/Thumbnails/.gitkeep
 
 # Python bytecode & cache
 *.py[cod]
