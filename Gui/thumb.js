@@ -1,11 +1,10 @@
 function send(){
     Show("title")
     var gdrive = document.getElementById("gdrive").value
-    var scoresaber_id = document.getElementById("scoresaber_id").value
-    var bsr = document.getElementById("bsr").value
-    var player_name = document.getElementById("player_name").value
+    var scoresaber_id = document.getElementById("leaderboard_id").value
+    var profile = document.getElementById("profile").value
     var score = document.getElementById("score").value
-    eel.Generate(scoresaber_id, bsr, player_name, score, gdrive)
+    eel.Generate(leaderboard_id, profile, score, gdrive)
 }
 
 eel.expose(DisableStartButton)
