@@ -176,7 +176,7 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
 
     eel.print_output("Description:")
     eel.print_output("")
-    eel.print_output(f"Player: https://scoresaber.com/{profile}")
+    eel.print_output(f"Player: https://scoresaber.com/u/{profile}")
     eel.print_output(f"Mappa: https://beatsaver.com/maps/{bsr}")
     eel.print_output(f"Mapper: {mapper}")
     eel.print_output(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
