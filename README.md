@@ -137,11 +137,9 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
   * Make sure you've installed FFmpeg as instructed above. If it's already installed, make sure FFmpeg is in PATH
     
 ## Known issues
-* Only works with ScoreSaber. BeatLeader support will be added
 * Currently only generates generic thumbnails with no custom colors. Support for custom colors will be added
 
 ## Upcoming features
-* BeatLeader support
 * Custom colors in thumbnails for all players
 * Hardware encoding for FFmpeg for faster renders
 * Better GUI
