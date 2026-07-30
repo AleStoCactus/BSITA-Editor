@@ -1,0 +1,28 @@
+# Custom project exclusions
+__pycache__/
+/Gui/Videos/
+/transcripts/
+/venv/
+/Gui/Thumbnails
+
+# Python bytecode & cache
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+.venv/
+env/
+ENV/
+
+# Build & distribution artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE & OS meta files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
