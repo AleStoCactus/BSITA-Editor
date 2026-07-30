@@ -12,8 +12,9 @@ import video_editor
 eel.init('Gui')
 
 @eel.expose
-def Generate(leaderboard_id, profile, score, gdriveLink, selected_leaderboard):
+def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard):
     global player_name
+
     if selected_leaderboard == "ss":
         playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
         player_name = playerRequest["playerNameInGame"]
@@ -153,10 +154,8 @@ def Generate(leaderboard_id, profile, score, gdriveLink, selected_leaderboard):
 
 
     # Draw player name in the bottom-center of the image
-    # Draw player name in the bottom-center of the image
     player_font = ImageFont.truetype("Metropolis-Thin.otf", 100)
-    
-    # Get bounding box: (left, top, right, bottom)
+
     p_left, p_top, p_right, p_bottom = draw.textbbox((0, 0), player_name, font=player_font)
     text_width = p_right - p_left
     text_height = p_bottom - p_top
@@ -183,8 +182,6 @@ def Generate(leaderboard_id, profile, score, gdriveLink, selected_leaderboard):
     except FileNotFoundError:
         eel.print_output(f"[warning] watermark non disponibile")
     
-
-    # Save the image to a file
     eel.print_clear()
     image.save(f"Gui/Thumbnails/{player_name}_{bsr}.png")
 
@@ -198,7 +195,11 @@ def Generate(leaderboard_id, profile, score, gdriveLink, selected_leaderboard):
 
     eel.print_output("Description:")
     eel.print_output("")
-    eel.print_output(f"Player: https://scoresaber.com/u/{profile}")
+    eel.print_output(f"Note aggiuntive: {desc_notes}")
+    if selected_leaderboard == "ss":
+        eel.print_output(f"Player: https://scoresaber.com/u/{profile}")
+    elif selected_leaderboard == "bl":
+        eel.print_output(f"Player: https://beatleader.com/u/{profile}")
     eel.print_output(f"Mappa: https://beatsaver.com/maps/{bsr}")
     eel.print_output(f"Mapper: {mapper}")
     if selected_leaderboard == "ss":
