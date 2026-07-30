@@ -1,7 +1,11 @@
 # BSITA EDITOR
 Generates thumbnail and video w/intro for BSITA YT channel by getting information from the ScoreSaber and BeatLeader API
 
-## Installation
+## Auto setup [Linux Only]
+**This is an experimental method for setting up the software. From my testing, it works, tell me if I'm wrong**
+* Run ```StartLinux.sh```
+
+## Manual installation [Linux & Windows]
 1. Install Python
 2. Create a venv in the repo's root directory and activate it it
    ```
@@ -50,6 +54,10 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
    ```
 
 ## Usage
+### Auto Start [Linux Only]
+* Run ```StartLinux.sh```
+
+### Manual usage [Linux & Windows]
 1. Make sure you are running the venv created during setup, run this in the root folder
   ```
    source .venv/bin/activate
@@ -147,6 +155,7 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
 * Optional input field for custom player name
 * Show generated title and description cleanly in the WebUI
 * Better README
+* Auto start script for Windows
 
 **Only tested on EndeavourOS Linux. It should work on all OSes, tell me if I'm wrong because idk**
 
