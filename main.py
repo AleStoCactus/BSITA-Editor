@@ -12,27 +12,47 @@ import video_editor
 eel.init('Gui')
 
 @eel.expose
-def Generate(leaderboard_id, profile, score, gdriveLink):
+def Generate(leaderboard_id, profile, score, gdriveLink, selected_leaderboard):
     global player_name
-    playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
-    player_name = playerRequest["playerNameInGame"]
+    if selected_leaderboard == "ss":
+        playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
+        player_name = playerRequest["playerNameInGame"]
+    elif selected_leaderboard == "bl":
+        playerRequest = requests.get(f"https://api.beatleader.com/player/{profile}").json()
+        player_name = playerRequest["badges"][0]["player"]["name"]
+    else:
+        eel.print_output("Error: could not get selected leaderboard")
+
     global bsr
     global map_id
     global mapper
     
     # scoresaber code
-    response = requests.get(f"https://scoresaber.com/api/v2/leaderboards/{leaderboard_id}")
-    if response.status_code != 200:
-        eel.print_output("Error: Failed to retrieve leaderboard information")
-    leaderboard_data = response.json()
-    bsr = leaderboard_data["map"]["bsid"]
-    song_name = leaderboard_data["map"]["songName"]
-    artist_name = leaderboard_data["map"]["songAuthorName"]
-    mapper = leaderboard_data["map"]["levelAuthorName"]
-    thumbnail_url = leaderboard_data["map"]["coverUrl"]
-    rawdiff = leaderboard_data["difficulty"]["difficulty"]
-    map_id = leaderboard_data["map"]["id"]
-
+    if selected_leaderboard == "ss":
+        response = requests.get(f"https://scoresaber.com/api/v2/leaderboards/{leaderboard_id}")
+        if response.status_code != 200:
+            eel.print_output("Error: Failed to retrieve leaderboard information")
+        leaderboard_data = response.json()
+        bsr = leaderboard_data["map"]["bsid"]
+        song_name = leaderboard_data["map"]["songName"]
+        artist_name = leaderboard_data["map"]["songAuthorName"]
+        mapper = leaderboard_data["map"]["levelAuthorName"]
+        thumbnail_url = leaderboard_data["map"]["coverUrl"]
+        rawdiff = leaderboard_data["difficulty"]["difficulty"]
+        map_id = leaderboard_data["map"]["id"]
+    elif selected_leaderboard == "bl":
+        response = requests.get(f"https://api.beatleader.com/leaderboard/{leaderboard_id}")
+        if response.status_code != 200:
+            eel.print_output("Error: Failed to retrieve leaderboard information")
+        leaderboard_data = response.json()
+        bsr = leaderboard_data["song"]["id"]
+        song_name = leaderboard_data["song"]["name"]
+        artist_name = leaderboard_data["song"]["author"]
+        mapper = leaderboard_data["song"]["mapper"]
+        thumbnail_url = leaderboard_data["song"]["coverImage"]
+        rawdiff = leaderboard_data["difficulty"]["value"]
+    else:
+        eel.print_output("Error: could not get selected leaderboard")
     
     eel.DisableStartButton()
     eel.Hide("editor")
@@ -45,10 +65,12 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
     if os.path.exists(f"transcripts\\{player_name}_{bsr}_transcript.txt"):
         os.remove(f"transcripts\\{player_name}_{bsr}_transcript.txt")
 
+    eel.print_output(f"Selected leaderboard: {selected_leaderboard}")
     eel.print_output(f"Player: {player_name}")
     eel.print_output(f"Song name: {song_name}")
     eel.print_output(f"BSR: {bsr}")
-    eel.print_output(f"SS map ID: {map_id}")
+    if selected_leaderboard == "ss":
+        eel.print_output(f"SS map ID: {map_id}")
     eel.print_output(f"Song artist: {artist_name}")
     eel.print_output(f"Mapper: {mapper}")
     eel.print_output("downloading video...")
@@ -179,7 +201,10 @@ def Generate(leaderboard_id, profile, score, gdriveLink):
     eel.print_output(f"Player: https://scoresaber.com/u/{profile}")
     eel.print_output(f"Mappa: https://beatsaver.com/maps/{bsr}")
     eel.print_output(f"Mapper: {mapper}")
-    eel.print_output(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
+    if selected_leaderboard == "ss":
+        eel.print_output(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
+    elif selected_leaderboard == "bl":
+        eel.print_output(f"Leaderboard: https://beatleader.com/leaderboard/global/{leaderboard_id}")
     eel.print_output("")
     eel.print_output("Join our Discord: https://discord.gg/m6NPkrhVFy")
     eel.print_output("")
