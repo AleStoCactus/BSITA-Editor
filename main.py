@@ -17,7 +17,7 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
 
     if selected_leaderboard == "ss":
         playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
-        player_name = playerRequest["playerNameInGame"]
+        player_name = playerRequest["name"]
     elif selected_leaderboard == "bl":
         playerRequest = requests.get(f"https://api.beatleader.com/player/{profile}").json()
         player_name = playerRequest["badges"][0]["player"]["name"]
