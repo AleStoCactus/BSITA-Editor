@@ -7,6 +7,7 @@ import textwrap
 import eel
 import gdown
 import os
+import re
 import video_editor
 import borders
 
@@ -21,6 +22,13 @@ def fetch_player_name(profile, selected_leaderboard):
     except (requests.RequestException, ValueError, KeyError, TypeError):
         pass
     return None
+
+# Works with .../file/d/<id>/view links, ...?id=<id> links and plain IDs.
+# The ID is passed to gdown directly because the newer versions removed the fuzzy option for /view links
+def drive_file_id(link):
+    link = link.strip()
+    match = re.search(r"/d/([\w-]+)", link) or re.search(r"[?&]id=([\w-]+)", link)
+    return match.group(1) if match else link
 
 @eel.expose
 def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color):
@@ -83,11 +91,12 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
     eel.print_output(f"Mapper: {mapper}")
     eel.print_output("downloading video...")
     try:
-        downloaded = gdown.download(gdriveLink, "video.mp4", quiet=False, fuzzy=True)
-    except Exception:
-        downloaded = None
-    if downloaded is None:
-        eel.print_output("Error: Failed to download the video, check the Google Drive link and its sharing settings")
+        downloaded = gdown.download(id=drive_file_id(gdriveLink), output="video.mp4", quiet=False)
+        error = None if downloaded else "no file downloaded"
+    except Exception as e:
+        error = f"{type(e).__name__}: {e}"
+    if error:
+        eel.print_output(f"Error: Failed to download the video ({error}). Check the Google Drive link and its sharing settings")
         eel.EnableStartButton()
         return
     eel.print_output("download complete")
