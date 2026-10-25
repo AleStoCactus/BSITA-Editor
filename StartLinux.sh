@@ -119,7 +119,7 @@ source .venv/bin/activate
 # -----------------------------------------------------------------------------
 echo "--> Checking/upgrading Python dependencies..."
 pip install --upgrade pip --quiet
-pip install --upgrade pillow eel moviepy gdown --quiet
+pip install --upgrade pillow eel moviepy gdown requests numpy --quiet
 
 # -----------------------------------------------------------------------------
 # 5. Launch
