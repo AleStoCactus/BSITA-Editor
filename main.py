@@ -12,7 +12,7 @@ import video_editor
 eel.init('Gui')
 
 @eel.expose
-def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard):
+def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, encoder):
     global player_name
 
     if selected_leaderboard == "ss":
@@ -214,8 +214,12 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
     eel.print_output("Intro Animation by @pizzi7341:")
     eel.print_output("https://www.youtube.com/channel/UCc6spI8nRIAhM5-GB95GQpQ")
     eel.print_output("")
-    video_editor.main("video.mp4", player_name, bsr)
+    video_editor.main("video.mp4", player_name, bsr, encoder)
     os.remove("video.mp4")
+
+@eel.expose
+def GetEncoders():
+    return [{"id": encoder["id"], "name": encoder["name"]} for encoder in video_editor.get_available_encoders()]
 
 @eel.expose
 def Transcript(line):

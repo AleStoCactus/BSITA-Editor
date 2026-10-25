@@ -79,7 +79,8 @@ object-fit: contain;
 
 input[type="text"],
 input[type="date"],
-input[type="time"] {
+input[type="time"],
+select {
     font-family: inherit;
     font-size: 15px;
     color: var(--text-primary);
@@ -93,7 +94,8 @@ input[type="time"] {
 
 input[type="text"]:focus,
 input[type="date"]:focus,
-input[type="time"]:focus {
+input[type="time"]:focus,
+select:focus {
     border-color: var(--red);
     box-shadow: 0 0 0 3px rgba(190, 29, 45, 0.25);
 }

@@ -6,8 +6,23 @@ function send(){
     var score = document.getElementById("score").value
     var desc_notes = document.getElementById("desc-notes").value
     var selected_leaderboard = document.querySelector('input[name="leaderboard"]:checked')?.value;
-    eel.Generate(leaderboard_id, profile, score, gdrive, desc_notes, selected_leaderboard)
+    var encoder = document.getElementById("encoder").value
+    eel.Generate(leaderboard_id, profile, score, gdrive, desc_notes, selected_leaderboard, encoder)
 }
+
+// Fill the encoder list with the encoders that work on this machine
+document.addEventListener("DOMContentLoaded", function(){
+    eel.GetEncoders()(function(encoders){
+        var select = document.getElementById("encoder")
+        select.options[0].text = "Auto: " + encoders[0].name
+        encoders.forEach(function(encoder){
+            var option = document.createElement("option")
+            option.value = encoder.id
+            option.text = encoder.name
+            select.add(option)
+        })
+    })
+})
 
 eel.expose(DisableStartButton)
 function DisableStartButton(){

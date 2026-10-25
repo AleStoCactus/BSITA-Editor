@@ -73,12 +73,24 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
   - **Leaderboard ID:** the ID after ../difficulty/ on ScoreSaber or the ID after ../global/ on BeatLeader. Paste the ID, not the whole link. If ../difficulty/ID isn't visible, try changing difficulty on ScoreSaber then switching back. On BeatLeader don't copy the number after the leaderboard ID
   - **Score & Notes:** accuracy in percentage and some extra information (pp, CS level, important feat...)
   - **Google Drive link:** Google Drive link to the video. Must be shared as "Anyone with the link" and should point to the video file directly, not a folder
+  - **Encoder:** the video encoder used by FFmpeg. **Auto** uses a hardware encoder when one is available, see [Hardware encoding](#hardware-encoding)
 3. Google Drive download progress will be visible from the terminal you used to run ```main.py```
 4. Some information regarding the data obtained from ScoreSaber will be logged in the WebUI
 5. Wait for FFmpeg to finish encoding the video, progress is shown in the terminal window
 6. Once the encoding finished, you'll be able to preview and download the video from the WebUI, or grab it from ```/Gui/Videos```
    * The thumbnail will be saved in ```/Gui/Thumbnails```
    * The generated title and description can be copied from the latest file in ```/transcripts```
+
+## Hardware encoding
+The video is encoded on the GPU when possible, which is much faster than encoding on the CPU. When the WebUI opens, every encoder supported by your FFmpeg build is tested with a short encode, and the ones that work are listed in the **Encoder** menu:
+* **NVIDIA NVENC** (`h264_nvenc`): NVIDIA GPUs with the proprietary driver
+* **Intel Quick Sync** (`h264_qsv`): Intel GPUs
+* **AMD AMF** (`h264_amf`): AMD GPUs on Windows
+* **VAAPI** (`h264_vaapi`): AMD and Intel GPUs on Linux. Requires the VA-API driver (`mesa-va-drivers` for AMD, `intel-media-driver` for Intel)
+* **Apple VideoToolbox** (`h264_videotoolbox`): macOS
+* **CPU (libx264)**: always available, slowest
+
+**Auto** uses the first available encoder in the order above. If the hardware encoder fails during the render, the video is encoded again on the CPU. The encoder in use is shown in the terminal window.
 
 ## Usage example
 * Using me (Ryleeeee) as an example
@@ -143,13 +155,16 @@ Generates thumbnail and video w/intro for BSITA YT channel by getting informatio
 
 * FFmpeg not found
   * Make sure you've installed FFmpeg as instructed above. If it's already installed, make sure FFmpeg is in PATH
+
+* Your GPU's encoder is not listed in the **Encoder** menu
+  * Make sure your GPU drivers are installed and up to date
+  * Check that your FFmpeg build includes the encoder: `ffmpeg -encoders | grep h264`
     
 ## Known issues
 * Currently only generates generic thumbnails with no custom colors. Support for custom colors will be added
 
 ## Upcoming features
 * Custom colors in thumbnails for all players
-* Hardware encoding for FFmpeg for faster renders
 * Better GUI
 * Thumbnail preview
 * Optional input field for custom player name
