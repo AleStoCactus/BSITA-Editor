@@ -8,63 +8,70 @@ import eel
 import gdown
 import os
 import video_editor
+import borders
 
 eel.init('Gui')
 
+def fetch_player_name(profile, selected_leaderboard):
+    try:
+        if selected_leaderboard == "ss":
+            return requests.get(f"https://scoresaber.com/api/v2/players/{profile}", timeout=10).json()["name"]
+        if selected_leaderboard == "bl":
+            return requests.get(f"https://api.beatleader.com/player/{profile}", timeout=10).json()["name"]
+    except (requests.RequestException, ValueError, KeyError, TypeError):
+        pass
+    return None
+
 @eel.expose
-def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, encoder):
-    global player_name
-
-    if selected_leaderboard == "ss":
-        playerRequest = requests.get(f"https://scoresaber.com/api/v2/players/{profile}").json()
-        player_name = playerRequest["name"]
-    elif selected_leaderboard == "bl":
-        playerRequest = requests.get(f"https://api.beatleader.com/player/{profile}").json()
-        player_name = playerRequest["badges"][0]["player"]["name"]
-    else:
-        eel.print_output("Error: could not get selected leaderboard")
-
-    global bsr
-    global map_id
-    global mapper
-    
-    # scoresaber code
-    if selected_leaderboard == "ss":
-        response = requests.get(f"https://scoresaber.com/api/v2/leaderboards/{leaderboard_id}")
-        if response.status_code != 200:
-            eel.print_output("Error: Failed to retrieve leaderboard information")
-        leaderboard_data = response.json()
-        bsr = leaderboard_data["map"]["bsid"]
-        song_name = leaderboard_data["map"]["songName"]
-        artist_name = leaderboard_data["map"]["songAuthorName"]
-        mapper = leaderboard_data["map"]["levelAuthorName"]
-        thumbnail_url = leaderboard_data["map"]["coverUrl"]
-        rawdiff = leaderboard_data["difficulty"]["difficulty"]
-        map_id = leaderboard_data["map"]["id"]
-    elif selected_leaderboard == "bl":
-        response = requests.get(f"https://api.beatleader.com/leaderboard/{leaderboard_id}")
-        if response.status_code != 200:
-            eel.print_output("Error: Failed to retrieve leaderboard information")
-        leaderboard_data = response.json()
-        bsr = leaderboard_data["song"]["id"]
-        song_name = leaderboard_data["song"]["name"]
-        artist_name = leaderboard_data["song"]["author"]
-        mapper = leaderboard_data["song"]["mapper"]
-        thumbnail_url = leaderboard_data["song"]["coverImage"]
-        rawdiff = leaderboard_data["difficulty"]["value"]
-    else:
-        eel.print_output("Error: could not get selected leaderboard")
-    
+def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color):
     eel.DisableStartButton()
     eel.Hide("editor")
     eel.Hide("uploader")
+    eel.Hide("results")
+    eel.Hide("thumbnail")
     eel.print_clear()
 
+    player_name = custom_name.strip() or fetch_player_name(profile, selected_leaderboard)
+    if player_name is None:
+        eel.print_output("Error: Failed to retrieve player information, check the Profile ID and the selected leaderboard")
+        eel.EnableStartButton()
+        return
+
+    # scoresaber code
+    map_id = None
+    try:
+        if selected_leaderboard == "ss":
+            response = requests.get(f"https://scoresaber.com/api/v2/leaderboards/{leaderboard_id}")
+            response.raise_for_status()
+            leaderboard_data = response.json()
+            bsr = leaderboard_data["map"]["bsid"]
+            song_name = leaderboard_data["map"]["songName"]
+            artist_name = leaderboard_data["map"]["songAuthorName"]
+            mapper = leaderboard_data["map"]["levelAuthorName"]
+            thumbnail_url = leaderboard_data["map"]["coverUrl"]
+            rawdiff = leaderboard_data["difficulty"]["difficulty"]
+            map_id = leaderboard_data["map"]["id"]
+        else:
+            response = requests.get(f"https://api.beatleader.com/leaderboard/{leaderboard_id}")
+            response.raise_for_status()
+            leaderboard_data = response.json()
+            bsr = leaderboard_data["song"]["id"]
+            song_name = leaderboard_data["song"]["name"]
+            artist_name = leaderboard_data["song"]["author"]
+            mapper = leaderboard_data["song"]["mapper"]
+            thumbnail_url = leaderboard_data["song"]["coverImage"]
+            rawdiff = leaderboard_data["difficulty"]["value"]
+    except (requests.RequestException, ValueError, KeyError):
+        eel.print_output("Error: Failed to retrieve leaderboard information, check the Leaderboard ID")
+        eel.EnableStartButton()
+        return
+
+    file_name = f"{borders.safe_name(player_name)}_{bsr}"
+
     # remove files if they already exist
-    if os.path.exists(f"Gui\\Videos\\{player_name}_{bsr}.mp4"):
-        os.remove(f"Gui\\Videos\\{player_name}_{bsr}.mp4")
-    if os.path.exists(f"transcripts\\{player_name}_{bsr}_transcript.txt"):
-        os.remove(f"transcripts\\{player_name}_{bsr}_transcript.txt")
+    for path in (f"Gui/Videos/{file_name}.mp4", f"transcripts/{file_name}_transcript.txt"):
+        if os.path.exists(path):
+            os.remove(path)
 
     eel.print_output(f"Selected leaderboard: {selected_leaderboard}")
     eel.print_output(f"Player: {player_name}")
@@ -75,10 +82,16 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
     eel.print_output(f"Song artist: {artist_name}")
     eel.print_output(f"Mapper: {mapper}")
     eel.print_output("downloading video...")
-    gdown.download(gdriveLink, "video.mp4", quiet=False)
+    try:
+        downloaded = gdown.download(gdriveLink, "video.mp4", quiet=False, fuzzy=True)
+    except Exception:
+        downloaded = None
+    if downloaded is None:
+        eel.print_output("Error: Failed to download the video, check the Google Drive link and its sharing settings")
+        eel.EnableStartButton()
+        return
     eel.print_output("download complete")
 
-    
     match rawdiff:
         case 1:
            difficulty = "Easy" 
@@ -90,6 +103,8 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
             difficulty = "Expert"
         case 9:
             difficulty = "Expert+"
+        case _:
+            difficulty = str(rawdiff)
 
     response = requests.get(thumbnail_url)
     if response.status_code != 200:
@@ -165,65 +180,74 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
     draw.text((text_x, text_y), player_name, font=player_font, fill=(255, 255, 255, 255))
     draw.text((text_x, text_y), player_name, font=player_font, fill=(255, 255, 255, 255))
 
-    if player_name in ["arbo_5418", "bevilix", "fabrix10", "sionpizzi", "ivy"]:
-        border_path = f"borders/default.png"
-    else:
-        border_path = f"borders/{player_name}.png"
-    logo_path = f"borders/logo.png"
+    # Save the custom colors as the player's border, otherwise use the saved border or default.png
+    if custom_border:
+        path = borders.save_border(player_name, left_color, right_color)
+        eel.print_output(f"Border saved as {path}")
+    border = borders.get_border(player_name)
+    image.paste(border, (0, 0), mask=border)
     try:
-        border = Image.open(border_path)
-        image.paste(border, (0, 0), mask=border)
-
-    except FileNotFoundError:
-        eel.print_output(f"[warning] No border found for player {player_name}")
-    try:
-        logo = Image.open(logo_path)
+        logo = Image.open(borders.LOGO).convert("RGBA")
         image.paste(logo, (0, 0), mask=logo)
     except FileNotFoundError:
         eel.print_output(f"[warning] watermark non disponibile")
-    
-    eel.print_clear()
-    image.save(f"Gui/Thumbnails/{player_name}_{bsr}.png")
 
+    image.save(f"Gui/Thumbnails/{file_name}.png")
+    eel.ShowThumbnail(f"Thumbnails/{file_name}.png")
 
-    eel.print_output("")
-    eel.print_output("Title:")
-    eel.print_output("")
-    eel.print_output(f"{player_name} | {artist_name} - {song_name} [{difficulty}] | {score}")
-    eel.print_output("")
-    player_name = player_name.lower()
+    title = f"{player_name} | {artist_name} - {song_name} [{difficulty}] | {score}"
 
-    eel.print_output("Description:")
-    eel.print_output("")
-    eel.print_output(f"Note aggiuntive: {desc_notes}")
+    description = []
+    if desc_notes.strip():
+        description += [f"Note aggiuntive: {desc_notes}", ""]
     if selected_leaderboard == "ss":
-        eel.print_output(f"Player: https://scoresaber.com/u/{profile}")
+        description.append(f"Player: https://scoresaber.com/u/{profile}")
     elif selected_leaderboard == "bl":
-        eel.print_output(f"Player: https://beatleader.com/u/{profile}")
-    eel.print_output(f"Mappa: https://beatsaver.com/maps/{bsr}")
-    eel.print_output(f"Mapper: {mapper}")
+        description.append(f"Player: https://beatleader.com/u/{profile}")
+    description.append(f"Mappa: https://beatsaver.com/maps/{bsr}")
+    description.append(f"Mapper: {mapper}")
     if selected_leaderboard == "ss":
-        eel.print_output(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
+        description.append(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
     elif selected_leaderboard == "bl":
-        eel.print_output(f"Leaderboard: https://beatleader.com/leaderboard/global/{leaderboard_id}")
-    eel.print_output("")
-    eel.print_output("Join our Discord: https://discord.gg/m6NPkrhVFy")
-    eel.print_output("")
-    eel.print_output("Thumbnail design by @.benna_:")
-    eel.print_output("https://www.instagram.com/draws_by_benna/")
-    eel.print_output("Intro Animation by @pizzi7341:")
-    eel.print_output("https://www.youtube.com/channel/UCc6spI8nRIAhM5-GB95GQpQ")
-    eel.print_output("")
-    video_editor.main("video.mp4", player_name, bsr, encoder)
-    os.remove("video.mp4")
+        description.append(f"Leaderboard: https://beatleader.com/leaderboard/global/{leaderboard_id}")
+    description += [
+        "",
+        "Join our Discord: https://discord.gg/m6NPkrhVFy",
+        "",
+        "Thumbnail design by @.benna_:",
+        "https://www.instagram.com/draws_by_benna/",
+        "Intro Animation by @pizzi7341:",
+        "https://www.youtube.com/channel/UCc6spI8nRIAhM5-GB95GQpQ",
+    ]
+    description = "\n".join(description)
+
+    eel.ShowResults(title, description)
+    with open(f"transcripts/{file_name}_transcript.txt", "w", encoding="utf-8") as file:
+        file.write(f"Title:\n\n{title}\n\nDescription:\n\n{description}\n")
+
+    try:
+        video_editor.main("video.mp4", file_name, codec, encoder)
+    finally:
+        os.remove("video.mp4")
 
 @eel.expose
 def GetEncoders():
-    return [{"id": encoder["id"], "name": encoder["name"]} for encoder in video_editor.get_available_encoders()]
+    encoders = video_editor.get_available_encoders()
+    return [
+        {"id": codec, "name": video_editor.CODECS[codec], "encoders": [{"id": e["id"], "name": e["name"]} for e in encoders[codec]]}
+        for codec in video_editor.CODECS if codec in encoders
+    ]
+
+# The custom player name replaces the one from the leaderboard everywhere, also for the border
+@eel.expose
+def GetBorderColors(profile, selected_leaderboard, custom_name):
+    player_name = custom_name.strip() or (profile.strip() and fetch_player_name(profile.strip(), selected_leaderboard))
+    if not player_name:
+        return None
+    return {"player": player_name, **borders.get_border_colors(player_name)}
 
 @eel.expose
-def Transcript(line):
-    with open(f"transcripts/{player_name}_{bsr}_transcript.txt", "a") as file:
-        file.write(f"{line}\n")
+def PreviewBorder(left_color, right_color):
+    return borders.border_preview(left_color, right_color)
 
 eel.start('index.html', mode='chrome--app')
