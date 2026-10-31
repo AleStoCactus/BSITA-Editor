@@ -21,6 +21,7 @@
 
 body {
     margin: 0;
+    padding-top: 90px;
     font-family: 'Lato', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-dark);
     color: #ffffff;
