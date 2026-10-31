@@ -12,7 +12,8 @@ function send(){
     var custom_border = document.getElementById("custom-border").checked
     var left_color = document.getElementById("left-color").value
     var right_color = document.getElementById("right-color").value
-    eel.Generate(leaderboard_id, profile, score, gdrive, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color)
+    var headset = document.getElementById("headset").value
+    eel.Generate(leaderboard_id, profile, score, gdrive, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color, headset)
 }
 
 var codecs = []

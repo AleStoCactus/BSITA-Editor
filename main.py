@@ -31,7 +31,7 @@ def drive_file_id(link):
     return match.group(1) if match else link
 
 @eel.expose
-def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color):
+def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color, headset):
     eel.DisableStartButton()
     eel.Hide("editor")
     eel.Hide("uploader")
@@ -219,6 +219,8 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
         description.append(f"Leaderboard: https://scoresaber.com/map/{map_id}/difficulty/{leaderboard_id}")
     elif selected_leaderboard == "bl":
         description.append(f"Leaderboard: https://beatleader.com/leaderboard/global/{leaderboard_id}")
+    if headset.strip():
+        description.append(f"Headset: {headset}")
     description += [
         "",
         "Join our Discord: https://discord.gg/m6NPkrhVFy",
