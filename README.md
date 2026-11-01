@@ -157,8 +157,8 @@ When the WebUI opens, every encoder supported by your FFmpeg build is tested wit
   * Check that your FFmpeg build includes the encoder, for example `ffmpeg -encoders | grep av1`
   * Hardware AV1 encoding needs a recent GPU, see [Codecs and encoders](#codecs-and-encoders)
 * The video download fails
-  * Make sure the Google Drive file is shared as "Anyone with the link"
+  * Make sure the Google Drive file is shared as "Anyone with the link". If using a direct download URL, make sure the link directly prompts a download when accessed from a browser
 
-**Only tested on EndeavourOS Linux. It should work on all OSes, tell me if I'm wrong because idk**
+**Only tested on EndeavourOS and CachyOS Linux. It should work on all OSes, tell me if I'm wrong because idk**
 
 For any issues regarding this software, contact Ryleeeee or Ivy
