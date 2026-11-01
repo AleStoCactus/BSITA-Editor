@@ -8,6 +8,7 @@ import eel
 import gdown
 import os
 import re
+import urllib.parse
 import video_editor
 import borders
 
@@ -29,6 +30,30 @@ def drive_file_id(link):
     link = link.strip()
     match = re.search(r"/d/([\w-]+)", link) or re.search(r"[?&]id=([\w-]+)", link)
     return match.group(1) if match else link
+
+# Google Drive links (including bare file IDs and other non-URL text) are routed to gdown;
+# any other http(s) URL is treated as a direct download link.
+def is_google_drive_link(link):
+    parts = urllib.parse.urlparse(link.strip())
+    if not parts.scheme or not parts.netloc:
+        return True
+    return bool(re.match(r"(drive|docs)\.google\.", parts.netloc))
+
+# Streams the file at `link` to video.mp4. Returns None on success, an error message otherwise.
+def download_direct_link(link):
+    try:
+        with requests.get(link, stream=True, timeout=60) as response:
+            response.raise_for_status()
+            size = 0
+            with open("video.mp4", "wb") as f:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if not chunk:
+                        continue
+                    f.write(chunk)
+                    size += len(chunk)
+        return None if size else "no file downloaded"
+    except (requests.RequestException, OSError) as e:
+        return f"{type(e).__name__}: {e}"
 
 @eel.expose
 def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_leaderboard, codec, encoder, custom_name, custom_border, left_color, right_color, headset):
@@ -90,13 +115,16 @@ def Generate(leaderboard_id, profile, score, gdriveLink, desc_notes, selected_le
     eel.print_output(f"Song artist: {artist_name}")
     eel.print_output(f"Mapper: {mapper}")
     eel.print_output("downloading video...")
-    try:
-        downloaded = gdown.download(id=drive_file_id(gdriveLink), output="video.mp4", quiet=False)
-        error = None if downloaded else "no file downloaded"
-    except Exception as e:
-        error = f"{type(e).__name__}: {e}"
+    if is_google_drive_link(gdriveLink):
+        try:
+            downloaded = gdown.download(id=drive_file_id(gdriveLink), output="video.mp4", quiet=False)
+            error = None if downloaded else "no file downloaded"
+        except Exception as e:
+            error = f"{type(e).__name__}: {e}"
+    else:
+        error = download_direct_link(gdriveLink)
     if error:
-        eel.print_output(f"Error: Failed to download the video ({error}). Check the Google Drive link and its sharing settings")
+        eel.print_output(f'Error: Failed to download the video ({error}). Make sure the link is valid and, for Google Drive links, shared as "Anyone with the link"')
         eel.EnableStartButton()
         return
     eel.print_output("download complete")
