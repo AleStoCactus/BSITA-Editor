@@ -95,6 +95,19 @@ function ColorChanged(){
     UpdateBorderPreview()
 }
 
+function UpdateLeaderboardPlaceholder(){
+    var radios = document.querySelectorAll('input[name="leaderboard"]')
+    var checkedValue = "ss"
+    for (var i = 0; i < radios.length; i++){
+        if (radios[i].checked){
+            checkedValue = radios[i].value
+            break
+        }
+    }
+    document.getElementById("leaderboard_id").placeholder =
+        checkedValue === "bl" ? "ID after ../global/" : "ID after ../difficulty/"
+}
+
 document.addEventListener("DOMContentLoaded", function(){
     LoadEncoders()
     UpdateBorderPreview()
@@ -102,8 +115,12 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("profile").addEventListener("change", LoadBorderColors)
     document.getElementById("custom-name").addEventListener("change", LoadBorderColors)
     document.querySelectorAll('input[name="leaderboard"]').forEach(function(radio){
-        radio.addEventListener("change", LoadBorderColors)
+        radio.addEventListener("change", function(){
+            LoadBorderColors()
+            UpdateLeaderboardPlaceholder()
+        })
     })
+    UpdateLeaderboardPlaceholder()
     document.getElementById("left-color").addEventListener("input", ColorChanged)
     document.getElementById("right-color").addEventListener("input", ColorChanged)
 })
