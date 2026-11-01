@@ -65,8 +65,9 @@ The WebUI opens automatically, otherwise open http://localhost:8000/index.html
    * **Player name (optional):** replaces the name from the leaderboard in the thumbnail, the title, the file names and the border
    * **Leaderboard ID:** the ID after `../difficulty/` on ScoreSaber or the ID after `../global/` on BeatLeader. Paste the ID, not the whole link. If `../difficulty/ID` isn't visible, try changing difficulty on ScoreSaber then switching back. On BeatLeader don't copy the number after the leaderboard ID
    * **Score & Notes:** accuracy in percentage and some extra information (pp, CS level, important feat...), added to the title
+   * **Headset:** the player's VR headset
    * **Description notes:** extra notes added at the start of the description
-   * **Google Drive link:** link to the video. Must be shared as "Anyone with the link" and should point to the video file directly, not a folder
+   * **Video link:** link to the video on Google Drive or a direct download URL. Must be shared as "Anyone with the link" on Drive and should point to the video file directly, not a folder. If it's a direct URL, it should instantly prompt a download when the link is accessed on a browser
 2. Choose the **Codec** and the **Encoder**, see [Codecs and encoders](#codecs-and-encoders)
 3. Check the **Thumbnail Border**, see [Border colors](#border-colors)
 4. Click **Start Program**
@@ -111,8 +112,10 @@ When the WebUI opens, every encoder supported by your FFmpeg build is tested wit
 3. Acc is 49.83% and the map is Level 29 on Challenge Saber
    * Write `49.83% Level 29 CS First Pass ITA` in **Score & Notes**
 4. Video is hosted on Google Drive: https://drive.google.com/file/d/143kDU7AYHvt8WPHr0l334cw1fnKBlxha/view?usp=drive_link
-   * Verify that the link points directly to the video, then paste it in **Google Drive link**
-5. Press **Start Program**
+   * Verify that the link points directly to the video, then paste it in **Video link**
+5. The player's VR headset is a Meta Quest 3
+   * Write `Meta Quest 3` in **Headset**
+6. Press **Start Program**
    * The Log shows the data gathered from ScoreSaber
    ```
    Player: WDG_Ryleeeee
@@ -124,7 +127,7 @@ When the WebUI opens, every encoder supported by your FFmpeg build is tested wit
    downloading video...
    download complete
    ```
-6. Once encoding is finished, the video can be found at `/Gui/Videos/WDG_Ryleeeee_284b0.mp4`
+7. Once encoding is finished, the video can be found at `/Gui/Videos/WDG_Ryleeeee_284b0.mp4`
    * The description is shown in the WebUI and saved in `/transcripts/WDG_Ryleeeee_284b0_transcript.txt`
      ```
      Player: https://scoresaber.com/u/ryleeeee
